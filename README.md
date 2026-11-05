@@ -1,6 +1,6 @@
 # linux-cloud-module02
 
-## Module 02 â Linux, Networking and Cloud Infrastructure (Day 6ÒDay 10)
+## Module 02 Linux, Networking and Cloud Infrastructure (Day 6 - Day 10)
 
 ### Overview
 
