@@ -1,18 +1,12 @@
 # Cleanup record and procedure
 
-## Azure cleanup — 2026-11-05
+## Final Azure alternative-SKU preflight — 2026-11-05
 
-The Azure fallback did not create a VM. Standard_B1s capacity validation failed in Chile Central, West US, and Canada Central before compute provisioning. No managed OS disk was created.
+No VM provisioning request or new resource creation was made in this preflight. Both Standard_B1ms and Standard_B2s were marked NotAvailableForSubscription in Chile Central, West US, and Canada Central. The available quota did not override those SKU restrictions.
 
-Temporary networking was created only inside the isolated resource group internship-m02-demo. Before each regional move and after the final failure, the group inventory was checked against the unique run tag and the expected four network resources. The entire group was deleted each time. Final verification showed:
+The prior temporary Azure resource group internship-m02-demo was already absent. A fresh subscription-wide search returned zero resources matching the prior run tag or expected VM, NIC, public IP, VNet, and NSG names; the matching VM count was zero. No cleanup action was required for this final preflight.
 
-- The resource group no longer exists.
-- A subscription-wide resource query for the run tag or the expected VM, NIC, public IP, VNet, and NSG names returned zero.
-- The matching VM count was zero.
-- The matching managed disk count was zero.
-- The ephemeral SSH key pair created for this attempt was deleted locally.
-
-The conservative estimate for the three short-lived Standard IPv4 allocations is at most USD 0.015 when budgeting one full hour per IP. No VM, disk, or workload data transfer was created. This is an estimate, not a posted invoice. Azure usage data can arrive after resource deletion; check Cost Management after its data refresh and do not infer zero charges from an empty resource inventory.
+The earlier B1s attempt had already removed its temporary network resources and SSH key. Its conservative estimated public IPv4 usage remains at most USD 0.015, not a posted charge. Current billing showed USD 100.00 remaining in the active credit lot and USD 0.00 pending eligible charges at the time of the query; usage data can arrive later, so this is not a final zero-cost statement.
 
 No pre-existing shared resources were deleted or changed. OCI was not retried, and VIRTUPRO/DICSAR resources were not touched.
 

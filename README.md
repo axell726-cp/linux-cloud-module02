@@ -4,54 +4,52 @@ Beginner internship module: Linux, networking, and cloud infrastructure (Day 6-D
 
 ## Execution status — 2026-11-05
 
-**Not completed.** Azure for Students was selected after the historical OCI capacity blocker, but Azure rejected the Ubuntu B1s VM request for host capacity in three policy-approved regions. No VM or managed OS disk was created. The Linux, SSH, Nginx, DNS, firewall, and HTTP objectives therefore remain unexecuted.
+**Not completed.** Earlier Standard_B1s provisioning requests were rejected for host capacity in Chile Central, West US, and Canada Central. This final alternative-size preflight found that both Standard_B1ms and Standard_B2s are marked NotAvailableForSubscription in all three permitted regions. No VM provisioning request was sent in this final preflight, and no VM or managed disk exists.
 
-The Azure and OCI records are separate: [evidence/oci-preflight-20261105.md](evidence/oci-preflight-20261105.md) is the historical OCI capacity check; [evidence/azure-capacity-attempt-20261105.md](evidence/azure-capacity-attempt-20261105.md) records the later Azure attempts and verified cleanup. Neither file claims successful Linux or web-server execution.
+The Azure and OCI records are separate: [evidence/oci-preflight-20261105.md](evidence/oci-preflight-20261105.md) is the historical OCI capacity check; [evidence/azure-capacity-attempt-20261105.md](evidence/azure-capacity-attempt-20261105.md) records the earlier B1s attempts and cleanup; [evidence/azure-alternative-skus-20261105.md](evidence/azure-alternative-skus-20261105.md) records this latest SKU restriction check. None claims successful Linux or web-server execution.
 
 ### Provider results
 
 | Provider/location | Result |
 | --- | --- |
 | OCI, us-ashburn-1 | Historical preflight: Always Free E2.1.Micro allowance was used; A1.Flex host capacity was unavailable in all three availability domains. No OCI resources were created. OCI was not retried. |
-| Azure, East US | Resource policy denied the attempted network security group because East US was not an allowed deployment region. No East US network resource remained. |
-| Azure, Chile Central | Azure returned SkuNotAvailable for Standard_B1s capacity. |
-| Azure, West US | Azure returned SkuNotAvailable for Standard_B1s capacity. |
-| Azure, Canada Central | Azure returned SkuNotAvailable for Standard_B1s capacity. |
+| Azure, East US | Resource policy denied the attempted network security group because East US was not an allowed deployment region. East US was not retried. |
+| Azure, Chile Central | Earlier B1s request failed host capacity. Current SKU API marks B1ms and B2s NotAvailableForSubscription. |
+| Azure, West US | Earlier B1s request failed host capacity. Current SKU API marks B1ms and B2s NotAvailableForSubscription. |
+| Azure, Canada Central | Earlier B1s request failed host capacity. Current SKU API marks B1ms and B2s NotAvailableForSubscription. |
 
-The network-only footprint in each subsequent region was temporary and was deleted before changing regions. In each region, the control-plane check confirmed SSH limited to the current client IPv4 /32 and public TCP 80. This proves the NSG rules were configured; it does not prove SSH or HTTP connectivity.
+The targeted az vm list-skus CLI call did not return. The same Microsoft.Compute SKU API returned the per-region restrictions recorded in the new evidence file. Regional quotas were available, but do not override a subscription restriction.
 
 ### Azure eligibility and cost gate
 
-Before VM requests, the Azure CLI authenticated to an enabled Azure for Students subscription. The subscription spending limit was On and was rechecked before each request; it was never removed, and the subscription was not upgraded. The predeployment billing snapshot showed USD 100.00 of promotional credit, not estimated, expiring 2027-09-22 22:35 UTC. Post-run usage can take time to appear, so that snapshot is not a final remaining-balance statement.
+The Azure for Students subscription is Enabled, with spendingLimit=On. A refreshed billing check showed USD 100.00 in the active credit lot, not estimated, expiring 2027-09-22 22:35:26 UTC; pending eligible charges were USD 0.00 at that check. No upgrade was made and the spending limit was not changed. The credit and current charges can still change as billing data is processed.
 
-The conservative planning estimate for the complete one-hour demonstration was approximately **USD 0.50**, including a 25% reserve and no assumed free-usage allowances:
+The regional B-series quota showed 0 of 4 Standard BS family instances and 0 of 6 total cores used in each checked region. Canonical Ubuntu 24.04 was present without a Marketplace plan, but the selected VM sizes were subscription-restricted.
 
-| Cost item | Estimate used |
-| --- | ---: |
-| B1s compute, one hour | USD 0.0124 (highest listed rate in the attempted US/Canada regions; Canada Central was USD 0.0116/hour) |
-| 32-GiB Standard SSD E4 OS disk, one hour | USD 0.0046, prorated from USD 3.36/month |
-| Three temporary Standard IPv4 addresses, one full hour each | USD 0.015 |
-| Internet egress, 1 GB | USD 0.087, assuming the monthly free allowance was already consumed |
-| Standard SSD operations, 1 million | USD 0.28 |
-| Subtotal plus 25% reserve | About USD 0.50 |
+Retail prices returned:
 
-These are retail-rate estimates, not posted charges or a hard cap. The actual attempt created only temporary network resources; a conservative estimate for their billable IPv4 time is at most USD 0.015. No VM, managed disk, or workload egress was provisioned. Cost Management can report usage after it occurs, so the final amount must be checked after billing data refreshes. The spending limit remained On and no payment-plan conversion was made.
+| Size | Chile Central | West US | Canada Central |
+| --- | ---: | ---: | ---: |
+| Standard_B1ms | USD 0.0291/hour | USD 0.0248/hour | USD 0.0230/hour |
+| Standard_B2s | USD 0.0582/hour | USD 0.0496/hour | USD 0.0464/hour |
 
-Pricing references: [Azure for Students offer](https://azure.microsoft.com/en-us/pricing/offers/ms-azr-0170p), [Linux VM pricing and Canonical support](https://azure.microsoft.com/en-us/pricing/details/virtual-machines/linux/), [Azure Retail Prices API](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices), [managed disks](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types), and [bandwidth pricing](https://azure.microsoft.com/en-us/pricing/details/bandwidth/).
+A conservative hypothetical one-hour B2s deployment estimate is **about USD 0.67**, including a 25% reserve and no assumed free-usage allowances: highest B2s rate USD 0.0582, one hour of a 32-GiB Standard SSD E4 OS disk at USD 0.0046, two one-hour Standard IPv4 allocations at USD 0.010, 1 GB of South America internet egress at USD 0.181, and 1 million disk operations at USD 0.28. The subtotal is USD 0.5338; with 25% reserve it is USD 0.6673. This estimate is below the authorized USD 1.00 promotional-credit limit but is not an Azure hard cap or an invoice.
+
+No resources were created in this final SKU preflight. The earlier B1s check created temporary network resources, which were deleted; their conservative estimated IPv4 usage was at most USD 0.015. Billing can lag resource activity, so no final zero-cost claim is made. See [Azure spending limits](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/spending-limit), [Azure for Students offer](https://azure.microsoft.com/en-us/pricing/offers/ms-azr-0170p), [Linux VM pricing](https://azure.microsoft.com/en-us/pricing/details/virtual-machines/linux/), [Retail Prices API](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices), [managed disks](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types), [bandwidth pricing](https://azure.microsoft.com/en-us/pricing/details/bandwidth/), and [Cost Management data timing](https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/understand-cost-mgt-data).
 
 ### Objective status
 
 | Objective | Status |
 | --- | --- |
-| Create Ubuntu VM and secure network access | Not completed: B1s capacity was unavailable in all three attempted allowed regions. All temporary networking was removed. |
+| Create an eligible Ubuntu VM and secure network access | Not completed: B1s host capacity failed previously; B1ms and B2s are currently subscription-restricted in all three permitted regions. |
 | Demonstrate Linux CLI, users, groups, permissions, processes, services, and SSH | Not executed: no VM was available. |
 | Install Nginx and verify local/external HTTP 200, DNS, and firewall | Not executed: no VM or endpoint existed. |
 
-No SSH session or DNS/HTTP test ran. No screenshot of a live Module 02 page exists because no VM or Nginx service was created; the evidence directory contains the real capacity and cleanup outputs instead. This distinction is intentional.
+No VM, SSH, Linux, DNS, firewall, or HTTP tests were performed in this final preflight. No screenshot of a live Module 02 page exists. The existing Nginx and verification scripts remain procedures, not execution evidence.
 
 ### Cleanup
 
-The temporary resource group internship-m02-demo is absent. A subscription-wide search returned zero resources with this run tag or the expected names, zero matching VMs, and zero matching managed disks. The temporary SSH key pair generated for the attempt was removed from the local temporary directory. Existing OCI resources and VIRTUPRO/DICSAR infrastructure were not modified.
+The resource group internship-m02-demo is absent. The latest subscription-wide check returned zero resources with the prior run tag or expected names, zero matching VMs, and no new resources from this final preflight. The temporary SSH key from the earlier attempt was removed. Existing OCI resources and VIRTUPRO/DICSAR infrastructure were not modified.
 
 See [CLEANUP.md](CLEANUP.md) for the cleanup record and safe procedure.
 
@@ -59,4 +57,4 @@ See [CLEANUP.md](CLEANUP.md) for the cleanup record and safe procedure.
 
 - scripts/setup-nginx.sh installs Nginx and UFW on Ubuntu, restricts SSH to the supplied client CIDR, and publishes the module page. It was not run on a VM in this execution.
 - scripts/verify.sh contains the Linux, service, DNS, network, and HTTP checks. It was not run because no VM was created.
-- evidence/ contains sanitized real preflight, failure, and cleanup outputs. It contains no fabricated VM logs or screenshots.
+- evidence/ contains sanitized real preflight, capacity, restriction, and cleanup outputs. It contains no fabricated VM logs or screenshots.
