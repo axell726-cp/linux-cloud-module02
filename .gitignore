@@ -1,0 +1,11 @@
+# Local credentials and generated key material
+*.pem
+*.key
+*.ppk
+*.p12
+.oci/
+.env
+.env.*
+
+# Local OCI resource manifest; never publish OCIDs
+*.local-resource-ids.json
