@@ -1,50 +1,44 @@
-# CLEANUP.md - OCI resource cleanup
+# Cleanup record and procedure
 
-## Current run
+## Azure cleanup — 2026-11-05
 
-The 2026-11-05 run stopped before provisioning. It created no VM, boot volume, subnet, NSG, public IP, route table, or security list. **There are no deployment resources from this run to delete.**
+The Azure fallback did not create a VM. Standard_B1s capacity validation failed in Chile Central, West US, and Canada Central before compute provisioning. No managed OS disk was created.
 
-The OCI inventory contained pre-existing resources with the `internship-m02` prefix, including a VCN and DNS resources. Those resources were not created by this run and must not be deleted as part of its cleanup.
+Temporary networking was created only inside the isolated resource group internship-m02-demo. Before each regional move and after the final failure, the group inventory was checked against the unique run tag and the expected four network resources. The entire group was deleted each time. Final verification showed:
 
-## Procedure for a future deployed run
+- The resource group no longer exists.
+- A subscription-wide resource query for the run tag or the expected VM, NIC, public IP, VNet, and NSG names returned zero.
+- The matching VM count was zero.
+- The matching managed disk count was zero.
+- The ephemeral SSH key pair created for this attempt was deleted locally.
 
-Before cleanup:
+The conservative estimate for the three short-lived Standard IPv4 allocations is at most USD 0.015 when budgeting one full hour per IP. No VM, disk, or workload data transfer was created. This is an estimate, not a posted invoice. Azure usage data can arrive after resource deletion; check Cost Management after its data refresh and do not infer zero charges from an empty resource inventory.
 
-1. Save and review the real SSH, Linux, Nginx, HTTP, and network evidence.
-2. Keep exact resource OCIDs in a local, untracked run manifest. Do not commit OCIDs, public IPs, private keys, tenancy IDs, or raw OCI responses.
-3. Before each delete, fetch that exact resource and verify its run-specific display name, creation time, and type against the manifest. Never delete by a broad name prefix or a tenancy-wide search.
-4. Preserve the existing VCN, Internet Gateway, DNS resolver/view, and every other resource that was not created by that run.
+No pre-existing shared resources were deleted or changed. OCI was not retried, and VIRTUPRO/DICSAR resources were not touched.
 
-Delete only the exact resources recorded for the run, in this order:
+## Safe procedure for a future Azure run
 
-1. Terminate the exact instance and request deletion of its boot volume:
+1. Save the real SSH, Linux, service, DNS, firewall, and HTTP evidence before deletion.
+2. Read the resource group tags and full inventory. Delete the group only if its unique run tag matches that run and every resource is confirmed as part of that run.
+3. Remove the exact temporary group, then verify the group is absent.
+4. Search at subscription scope for the unique run tag and expected resource names; verify no VM, managed disk, public IP, NIC, NSG, or VNet remains.
+5. Remove only the temporary SSH key generated for that run.
+6. Review Cost Management after usage data refresh. An empty resource list is not proof of zero charges.
 
-   ```powershell
-   oci compute instance terminate --instance-id $env:INSTANCE_ID --preserve-boot-volume false --force
-   ```
+Never delete resources by broad name prefix or subscription-wide search results. Do not remove or change the subscription spending limit to continue a deployment.
 
-2. Confirm the instance is `TERMINATED`. Confirm its ephemeral public IP has been released. If the exact boot volume remains, delete only the boot-volume OCID recorded for this run:
+## OCI historical cleanup record and procedure
 
-   ```powershell
-   oci bv boot-volume delete --boot-volume-id $env:BOOT_VOLUME_ID --force
-   ```
+The 2026-11-05 OCI preflight stopped before provisioning. It created no VM, boot volume, subnet, NSG, public IP, route table, or security list. Existing OCI resources with the internship-m02 prefix were not created by that run and must not be deleted.
 
-3. After the instance and VNIC are gone, delete the run's NSG:
+For any future OCI deployment, keep exact resource OCIDs in a local, untracked run manifest. Do not commit OCIDs, public IPs, private keys, tenancy IDs, or raw OCI responses. Before each delete, fetch the exact resource and verify its run-specific display name, creation time, and type against the manifest.
 
-   ```powershell
-   oci network nsg delete --nsg-id $env:NSG_ID --force
-   ```
+If a future run created the following resources, delete only the exact recorded identifiers and in dependency order:
 
-4. Delete the run's subnet. Then delete its route table and security list, if those were created by the run and are no longer attached:
+1. Terminate the exact instance and request deletion of its boot volume.
+2. Confirm the instance is TERMINATED and its VNIC/public IP has been released. If the exact boot volume remains, delete only its recorded OCID.
+3. Delete the run's NSG after the instance and VNIC are gone.
+4. Delete the run's subnet, then its route table and security list if that run created them and they are no longer attached.
+5. Verify each exact OCID is absent with the corresponding OCI get/list operation.
 
-   ```powershell
-   oci network subnet delete --subnet-id $env:SUBNET_ID --force
-   oci network route-table delete --rt-id $env:ROUTE_TABLE_ID --force
-   oci network security-list delete --security-list-id $env:SECURITY_LIST_ID --force
-   ```
-
-5. Verify each exact OCID is absent using the corresponding OCI list/get operation. Do not delete the VCN used by a future run unless that run created the VCN itself and the manifest records it.
-
-If a reserved public IP was explicitly created for a future run, delete it only when its exact OCID is in that run's manifest. Prefer an ephemeral IP for a temporary exercise; OCI releases it when its instance is terminated.
-
-Resource listings verify cleanup, not final billing. Do not report zero cost from a resource list alone; billing and usage data can arrive later and may include unrelated tenancy resources.
+Do not delete an existing VCN, Internet Gateway, DNS resolver/view, or any other resource that the run did not create. Prefer an ephemeral public IP for a temporary exercise. Resource listings verify cleanup, not final billing.

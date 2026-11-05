@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install and configure Nginx on an Ubuntu VM.
+# Install Nginx and configure the host firewall on an Ubuntu VM.
 set -Eeuo pipefail
 
 if [[ "$EUID" -ne 0 ]]; then
@@ -7,21 +7,30 @@ if [[ "$EUID" -ne 0 ]]; then
   exit 1
 fi
 
+ssh_allowed_cidr="${SSH_ALLOWED_CIDR:-}"
+if [[ -z "$ssh_allowed_cidr" ]]; then
+  echo "Set SSH_ALLOWED_CIDR to the authorized client IPv4 /32 before running this script." >&2
+  exit 1
+fi
+
 echo "=== Updating package lists ==="
 apt-get update
 
-echo "=== Installing Nginx and curl ==="
-apt-get install -y nginx curl
+echo "=== Installing Nginx, curl, and UFW ==="
+apt-get install -y nginx curl ufw
 
-echo "=== Checking the host firewall ==="
-if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q '^Status: active'; then
-  ufw allow 'Nginx HTTP'
-else
-  echo "UFW is inactive or unavailable; OCI network rules remain responsible for ingress."
-fi
+echo "=== Configuring the host firewall ==="
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow from "$ssh_allowed_cidr" to any port 22 proto tcp
+ufw allow 80/tcp
+ufw --force enable
+ufw status verbose
 
 echo "=== Publishing the Module 02 page ==="
-cat > /var/www/html/index.html <<'HTML'
+host_name="$(hostname -s)"
+os_name="$(. /etc/os-release && printf '%s' "$PRETTY_NAME")"
+cat > /var/www/html/index.html <<HTML
 <!doctype html>
 <html lang="en">
 <head>
@@ -31,11 +40,13 @@ cat > /var/www/html/index.html <<'HTML'
 </head>
 <body>
   <h1>Module 02 — Linux &amp; Cloud Infrastructure</h1>
-  <p>Host: $(hostname -s)</p>
-  <p>OS: $(. /etc/os-release && printf '%s' "$PRETTY_NAME")</p>
+  <p>Host: $host_name</p>
+  <p>OS: $os_name</p>
 </body>
 </html>
 HTML
+chown root:root /var/www/html/index.html
+chmod 0644 /var/www/html/index.html
 
 echo "=== Enabling and starting Nginx ==="
 systemctl enable --now nginx

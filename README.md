@@ -2,48 +2,61 @@
 
 Beginner internship module: Linux, networking, and cloud infrastructure (Day 6-Day 10).
 
-## Execution status - 2026-11-05
+## Execution status — 2026-11-05
 
-**Blocked before deployment.** Live OCI checks found no Always Free compute capacity for a temporary Ubuntu VM. No instance, boot volume, subnet, NSG, public IP, or Nginx service was created for this run. Existing OCI resources were left untouched.
+**Not completed.** Azure for Students was selected after the historical OCI capacity blocker, but Azure rejected the Ubuntu B1s VM request for host capacity in three policy-approved regions. No VM or managed OS disk was created. The Linux, SSH, Nginx, DNS, firewall, and HTTP objectives therefore remain unexecuted.
 
-Scripts in this repository are prepared procedures. Their presence does not mean that the Linux or HTTP objectives were executed.
+The Azure and OCI records are separate: [evidence/oci-preflight-20261105.md](evidence/oci-preflight-20261105.md) is the historical OCI capacity check; [evidence/azure-capacity-attempt-20261105.md](evidence/azure-capacity-attempt-20261105.md) records the later Azure attempts and verified cleanup. Neither file claims successful Linux or web-server execution.
 
-### Live preflight
+### Provider results
 
-- OCI API authentication succeeded using the existing local profile. The configured region is the tenancy home region, `us-ashburn-1`; its subscription status is `READY`.
-- `VM.Standard.E2.1.Micro`: both Always Free instance slots are already in use by two running instances. The live quota response reported 2 used and 0 available.
-- `VM.Standard.A1.Flex` fallback: live regional quotas showed 2 OCPUs and 12 GB memory available. Capacity reports for a 1 OCPU / 6 GB Ubuntu VM returned `OUT_OF_HOST_CAPACITY` in all three Ashburn availability domains.
-- Block volume: 144 GB used out of the 200 GB Always Free regional allowance; 56 GB remained. A 50 GB boot volume would fit, leaving 6 GB, but none was created.
-- OCI Resource Search showed two existing VCNs and pre-existing resources carrying the `internship-m02` prefix. They were not modified or deleted. No new VCN or network resources were created.
-- The client IPv4 address was resolved for a potential SSH `/32` rule and deliberately omitted from this repository.
+| Provider/location | Result |
+| --- | --- |
+| OCI, us-ashburn-1 | Historical preflight: Always Free E2.1.Micro allowance was used; A1.Flex host capacity was unavailable in all three availability domains. No OCI resources were created. OCI was not retried. |
+| Azure, East US | Resource policy denied the attempted network security group because East US was not an allowed deployment region. No East US network resource remained. |
+| Azure, Chile Central | Azure returned SkuNotAvailable for Standard_B1s capacity. |
+| Azure, West US | Azure returned SkuNotAvailable for Standard_B1s capacity. |
+| Azure, Canada Central | Azure returned SkuNotAvailable for Standard_B1s capacity. |
 
-The detailed, sanitized API summary is in [evidence/oci-preflight-20261105.md](evidence/oci-preflight-20261105.md).
+The network-only footprint in each subsequent region was temporary and was deleted before changing regions. In each region, the control-plane check confirmed SSH limited to the current client IPv4 /32 and public TCP 80. This proves the NSG rules were configured; it does not prove SSH or HTTP connectivity.
+
+### Azure eligibility and cost gate
+
+Before VM requests, the Azure CLI authenticated to an enabled Azure for Students subscription. The subscription spending limit was On and was rechecked before each request; it was never removed, and the subscription was not upgraded. The predeployment billing snapshot showed USD 100.00 of promotional credit, not estimated, expiring 2027-09-22 22:35 UTC. Post-run usage can take time to appear, so that snapshot is not a final remaining-balance statement.
+
+The conservative planning estimate for the complete one-hour demonstration was approximately **USD 0.50**, including a 25% reserve and no assumed free-usage allowances:
+
+| Cost item | Estimate used |
+| --- | ---: |
+| B1s compute, one hour | USD 0.0124 (highest listed rate in the attempted US/Canada regions; Canada Central was USD 0.0116/hour) |
+| 32-GiB Standard SSD E4 OS disk, one hour | USD 0.0046, prorated from USD 3.36/month |
+| Three temporary Standard IPv4 addresses, one full hour each | USD 0.015 |
+| Internet egress, 1 GB | USD 0.087, assuming the monthly free allowance was already consumed |
+| Standard SSD operations, 1 million | USD 0.28 |
+| Subtotal plus 25% reserve | About USD 0.50 |
+
+These are retail-rate estimates, not posted charges or a hard cap. The actual attempt created only temporary network resources; a conservative estimate for their billable IPv4 time is at most USD 0.015. No VM, managed disk, or workload egress was provisioned. Cost Management can report usage after it occurs, so the final amount must be checked after billing data refreshes. The spending limit remained On and no payment-plan conversion was made.
+
+Pricing references: [Azure for Students offer](https://azure.microsoft.com/en-us/pricing/offers/ms-azr-0170p), [Linux VM pricing and Canonical support](https://azure.microsoft.com/en-us/pricing/details/virtual-machines/linux/), [Azure Retail Prices API](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices), [managed disks](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-types), and [bandwidth pricing](https://azure.microsoft.com/en-us/pricing/details/bandwidth/).
 
 ### Objective status
 
 | Objective | Status |
 | --- | --- |
-| Create an eligible Ubuntu VM and secure network access | Not completed; no free host capacity |
-| Demonstrate Linux commands, permissions, users, processes, services, and SSH | Not executed; no VM was available |
-| Install Nginx and verify local and external HTTP 200 | Not executed; no VM was available |
+| Create Ubuntu VM and secure network access | Not completed: B1s capacity was unavailable in all three attempted allowed regions. All temporary networking was removed. |
+| Demonstrate Linux CLI, users, groups, permissions, processes, services, and SSH | Not executed: no VM was available. |
+| Install Nginx and verify local/external HTTP 200, DNS, and firewall | Not executed: no VM or endpoint existed. |
 
-No SSH or HTTP test was run. No deployment cleanup was needed because this run created no infrastructure. This report does not make a claim about charges from other resources in the tenancy.
+No SSH session or DNS/HTTP test ran. No screenshot of a live Module 02 page exists because no VM or Nginx service was created; the evidence directory contains the real capacity and cleanup outputs instead. This distinction is intentional.
 
-## Intended architecture
+### Cleanup
 
-Client -- TCP 22 from the current client IPv4 `/32`, TCP 80 public -- temporary Ubuntu VM -- Nginx.
+The temporary resource group internship-m02-demo is absent. A subscription-wide search returned zero resources with this run tag or the expected names, zero matching VMs, and zero matching managed disks. The temporary SSH key pair generated for the attempt was removed from the local temporary directory. Existing OCI resources and VIRTUPRO/DICSAR infrastructure were not modified.
 
-Use only an Always Free eligible shape and image in the tenancy home region. Recheck capacity and storage before any future attempt. Do not upgrade the account, use credits, or change an existing project to make capacity.
+See [CLEANUP.md](CLEANUP.md) for the cleanup record and safe procedure.
 
 ## Repository files
 
-- `scripts/setup-nginx.sh` installs and starts Nginx on Ubuntu.
-- `scripts/verify.sh` checks local Linux, service, DNS, port, and HTTP status.
-- `CLEANUP.md` describes exact-ID cleanup for resources created by a future run. The current blocked run has nothing to clean up.
-- `evidence/` contains sanitized evidence. It does not contain instance logs because no instance was created.
-
-## Cost and eligibility notes
-
-Oracle documents up to two Always Free E2.1.Micro instances, the A1 allowance, and 200 GB of combined boot and block volume storage in the home region. Free resources are subject to capacity. See [Oracle Always Free resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm) and the [OCI capacity report command](https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/compute/compute-capacity-report/create.html).
-
-The capacity report is the reason this run stopped; it is not evidence that the deployment objectives are complete.
+- scripts/setup-nginx.sh installs Nginx and UFW on Ubuntu, restricts SSH to the supplied client CIDR, and publishes the module page. It was not run on a VM in this execution.
+- scripts/verify.sh contains the Linux, service, DNS, network, and HTTP checks. It was not run because no VM was created.
+- evidence/ contains sanitized real preflight, failure, and cleanup outputs. It contains no fabricated VM logs or screenshots.
