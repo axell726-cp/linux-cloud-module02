@@ -1,5 +1,8 @@
 # Cleanup record and procedure
 
+## Azure recheck and cleanup — 2026-11-09
+
+The authenticated, read-only SKU query marked Standard_B1ms and Standard_B2s NotAvailableForSubscription in Chile Central, West US, and Canada Central. No VM provisioning request was sent, and this check created no Azure resources. The dedicated resource group internship-m02-demo returned RESOURCE_GROUP_EXISTS=false. No deletion was needed for this run. The active subscription remained Enabled with spendingLimit=On; no billing balance refresh was performed because deployment stopped at the SKU restriction gate.
 ## Final Azure alternative-SKU preflight — 2026-11-05
 
 No VM provisioning request or new resource creation was made in this preflight. Both Standard_B1ms and Standard_B2s were marked NotAvailableForSubscription in Chile Central, West US, and Canada Central. The available quota did not override those SKU restrictions.
