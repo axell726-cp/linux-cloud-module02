@@ -1,5 +1,8 @@
 # Cleanup record and procedure
 
+## AWS preflight — 2026-11-10
+
+No AWS resource creation was attempted. The preflight stopped before RunInstances because the account tax location and whether transaction taxes apply could not be verified, while promotional credits do not cover transaction-based taxes. No instance, EBS volume, public IPv4, key pair, or security group was created; no deletion was required. The existing default VPC and public route were inspected read-only and left unchanged. No AWS resource IDs or key material were generated for this run.
 ## Azure recheck and cleanup — 2026-11-09
 
 The authenticated, read-only SKU query marked Standard_B1ms and Standard_B2s NotAvailableForSubscription in Chile Central, West US, and Canada Central. No VM provisioning request was sent, and this check created no Azure resources. The dedicated resource group internship-m02-demo returned RESOURCE_GROUP_EXISTS=false. No deletion was needed for this run. The active subscription remained Enabled with spendingLimit=On; no billing balance refresh was performed because deployment stopped at the SKU restriction gate.
