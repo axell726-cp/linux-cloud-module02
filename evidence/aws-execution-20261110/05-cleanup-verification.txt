@@ -1,0 +1,15 @@
+successfulRunId=aws-m02-20261110T063105Z-3ab4a1
+instanceId=i-0373bae5ad68115f6 state=terminated
+rootVolumeId=vol-0f8ccab163cfc4515 absent=true deleteOnTermination=true
+networkInterfaceId=eni-0f7534a2df868213e absent=true deleteOnTermination=true
+securityGroupId=sg-0cc2e53875651f5f4 absent=true
+keyPairId=key-0fab380a425529dd3 absent=true
+elasticIpCountForInstance=0
+snapshotCountForRunVolume=0
+localPrivateKeyKnownHostsAndUserData=removed
+defaultVpcAndSubnet=reused_without_modification
+VIRTUPRO_DICSAR_other_projects=not_modified
+preEc2SetupRunId=aws-m02-20261110T062638Z-fc29b4: no RunInstances request; securityGroupId=sg-0e5bc7f05ae37a9e1 absent=true; keyPairId=key-0735720962f5fe27c absent=true; localPrivateKey=removed
+finalBilling=not_yet_posted_or_verified; do_not_claim_zero_final_cost
+cleanupVerifiedUtc=
+2026-11-10T06:46:45.4865133Z

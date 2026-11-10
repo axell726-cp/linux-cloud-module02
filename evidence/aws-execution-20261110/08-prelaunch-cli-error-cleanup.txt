@@ -1,0 +1,6 @@
+preEc2RunId=aws-m02-20261110T062638Z-fc29b4
+ec2RunInstancesRequestSent=false
+actualLocalCliError=Unknown options: --min-count, --max-count, 1, 1
+securityGroupId=sg-0e5bc7f05ae37a9e1; deleted and absence verified
+keyPairId=key-0735720962f5fe27c; deleted and absence verified
+no instance, volume, public IP, or ENI was created in this attempt

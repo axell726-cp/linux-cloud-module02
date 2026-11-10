@@ -1,0 +1,1 @@
+No browser screenshot was captured: the in-app browser blocked the temporary raw-IP URL with net::ERR_BLOCKED_BY_CLIENT. The external client returned HTTP 200 using Invoke-WebRequest; see 03-external-http.txt.

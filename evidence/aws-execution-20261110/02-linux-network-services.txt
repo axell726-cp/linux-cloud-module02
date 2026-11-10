@@ -1,0 +1,78 @@
+SSH_PUBLICKEY_AUTH=PASS
+
+=== Linux identity ===
+Tue Nov 10 06:35:53 UTC 2026
+Linux ip-172-31-23-78 7.0.0-1014-aws #14~24.04.1-Ubuntu SMP PREEMPT Fri Sep 18 21:24:59 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+OS=Ubuntu 24.04.5 LTS
+root
+uid=0(root) gid=0(root) groups=0(root)
+root
+
+=== Navigation, files, and permissions ===
+/home/ubuntu
+total 12
+drwxr-xr-x 2 root   root   4096 Nov 10 06:35 .
+drwxr-x--- 5 ubuntu ubuntu 4096 Nov 10 06:35 ..
+-rw-r----- 1 root   root     21 Nov 10 06:35 demo.txt
+Owner/group/mode: root:root 640
+
+=== Users and groups ===
+uid=1001(module02demo) gid=1001(module02lab) groups=1001(module02lab)
+module02demo : module02lab
+Owner/group/mode: module02demo:module02lab 640
+UNPRIVILEGED_READ_DENIED=PASS
+
+=== Processes ===
+    PID COMMAND         %CPU %MEM
+   2465 systemd          6.2  1.2
+      1 systemd          1.1  1.4
+    983 amazon-ssm-agen  0.4  2.3
+    612 snapd            0.2  4.5
+    196 systemd-udevd    0.1  0.9
+    596 dbus-daemon      0.1  0.6
+     15 pr/ttyS0         0.1  0.0
+
+=== Services and automatic termination ===
+active
+active
+enabled
+active
+Tue 2026-11-10 06:51:04 UTC         15min -         - m02-emergency-terminate.timer  m02-emergency-terminate.service
+
+=== IP addressing, routing, and DNS ===
+lo               UNKNOWN        127.0.0.1/8 ::1/128
+ens5             UP             172.31.23.78/20 metric 100 fe80::8ff:ebff:feb9:a12f/64
+default via 172.31.16.1 dev ens5 proto dhcp src 172.31.23.78 metric 100
+172.31.0.2 via 172.31.16.1 dev ens5 proto dhcp src 172.31.23.78 metric 100
+172.31.16.0/20 dev ens5 proto kernel scope link src 172.31.23.78 metric 100
+172.31.16.1 dev ens5 proto dhcp scope link src 172.31.23.78 metric 100
+2a06:bc80:10:1000::398 archive.ubuntu.com
+2a06:bc80:0:1000::16 archive.ubuntu.com
+
+=== Linux firewall ===
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    [REDACTED_HOME_IP]
+80/tcp                     ALLOW IN    Anywhere
+80/tcp (v6)                ALLOW IN    Anywhere (v6)
+
+
+=== Listening TCP ports ===
+State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess
+LISTEN 0      4096      127.0.0.54:53        0.0.0.0:*    users:(("systemd-resolve",pid=325,fd=17))
+LISTEN 0      4096   127.0.0.53%lo:53        0.0.0.0:*    users:(("systemd-resolve",pid=325,fd=15))
+LISTEN 0      4096         0.0.0.0:22        0.0.0.0:*    users:(("sshd",pid=1179,fd=3),("systemd",pid=1,fd=98))
+LISTEN 0      511          0.0.0.0:80        0.0.0.0:*    users:(("nginx",pid=2037,fd=5),("nginx",pid=2036,fd=5),("nginx",pid=2033,fd=5))
+LISTEN 0      4096            [::]:22           [::]:*    users:(("sshd",pid=1179,fd=4),("systemd",pid=1,fd=99))
+LISTEN 0      511             [::]:80           [::]:*    users:(("nginx",pid=2037,fd=6),("nginx",pid=2036,fd=6),("nginx",pid=2033,fd=6))
+
+=== Local HTTP ===
+LOCAL_HTTP_STATUS=200
+  <title>Module 02 — Linux &amp; Cloud Infrastructure</title>
+  <h1>Module 02 — Linux &amp; Cloud Infrastructure</h1>
+LINUX_TESTS=PASS

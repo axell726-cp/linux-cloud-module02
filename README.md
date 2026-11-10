@@ -2,11 +2,11 @@
 
 Beginner internship module: Linux, networking, and cloud infrastructure (Day 6-Day 10).
 
-## Latest execution status — rechecked 2026-11-10
+## Latest execution status — AWS execution 2026-11-10
 
-**Not completed.** The Azure B1ms/B2s restrictions remain documented. On 2026-11-10, AWS authentication and a Paid plan were verified; promotional credits cover EC2, VPC, and data transfer, with USD 53.15 estimated remaining. I did not launch a VM because the account's tax location could not be confirmed and AWS promotional credits exclude transaction taxes, so zero out-of-pocket cost could not be guaranteed. No AWS resources were created. The Linux, SSH, Nginx, DNS, firewall, and HTTP objectives remain unexecuted.
+**Completed with verified cleanup.** One Canonical Ubuntu 24.04 `t3.micro` ran in `us-east-1` for about 8 minutes. SSH key access restricted to the client `/32`, Linux users/groups/permissions/processes/services, IP/routing, DNS, UFW, Nginx, and local plus external HTTP 200 were verified with real commands. The instance is `terminated`; its root EBS volume, ENI, security group, and key pair are absent, with no EIP or snapshot remaining. See [the AWS execution evidence](evidence/aws-execution-20261110/).
 
-The Azure and OCI records are separate: [evidence/oci-preflight-20261105.md](evidence/oci-preflight-20261105.md) is the historical OCI capacity check; [evidence/azure-capacity-attempt-20261105.md](evidence/azure-capacity-attempt-20261105.md) records earlier B1s attempts and cleanup; [evidence/azure-alternative-skus-20261105.md](evidence/azure-alternative-skus-20261105.md) records the November 5 SKU check; [evidence/azure-sku-recheck-20261109.md](evidence/azure-sku-recheck-20261109.md) contains the November 9 CLI outputs; [evidence/aws-preflight-20261110.md](evidence/aws-preflight-20261110.md) records the AWS credit, price, and tax gate. None claims successful Linux or web-server execution.
+The OCI and Azure records remain historical capacity and eligibility blockers: [OCI](evidence/oci-preflight-20261105.md), [Azure B1s](evidence/azure-capacity-attempt-20261105.md), [Azure alternative SKUs](evidence/azure-alternative-skus-20261105.md), and [Azure SKU recheck](evidence/azure-sku-recheck-20261109.md). The [initial AWS cost/tax preflight](evidence/aws-preflight-20261110.md) records the original stop; the later authorized AWS execution and cleanup are documented separately in [evidence/aws-execution-20261110/](evidence/aws-execution-20261110/).
 
 ### Provider results
 
@@ -17,7 +17,7 @@ The Azure and OCI records are separate: [evidence/oci-preflight-20261105.md](evi
 | Azure, Chile Central | Earlier B1s request failed host capacity. The 2026-11-09 SKU API recheck marks B1ms and B2s NotAvailableForSubscription. |
 | Azure, West US | Earlier B1s request failed host capacity. The 2026-11-09 SKU API recheck marks B1ms and B2s NotAvailableForSubscription. |
 | Azure, Canada Central | Earlier B1s request failed host capacity. The 2026-11-09 SKU API recheck marks B1ms and B2s NotAvailableForSubscription. |
-| AWS, us-east-1 | Preflight only: the active credit covered EC2, VPC, and data transfer, but tax treatment could not be verified; no resources were created. |
+| AWS, us-east-1 | One temporary Ubuntu `t3.micro` ran the Module 02 checks; the instance and every run-created resource were removed and verified absent. |
 
 The November 5 az vm list-skus CLI call did not return. On November 9, the authenticated Microsoft.Compute SKU API query returned the restrictions recorded in the new evidence file. Regional quotas were available, but do not override a subscription restriction.
 
@@ -44,26 +44,34 @@ The authenticated AWS Free Tier API reported a PAID, ACTIVE plan with USD 53.15 
 
 The AWS Price List API returned USD 0.0104 per hour for Linux t3.micro and USD 0.08 per GB-month for gp3. AWS VPC pricing lists public IPv4 at USD 0.005 per hour. A conservative 1-hour estimate for t3.micro, an 8-GiB gp3 root disk, one public IPv4, and 1 GB internet egress (USD 0.09/GB, assuming the free allowance is already used) was USD 0.106277 before tax. With a 100% reserve and an illustrative 18% tax scenario applied to the reserved amount, the total is USD 0.250813. This is an estimate, not a posted charge or hard cap.
 
-No verified tax registration was returned for the account, the installed CLI could not retrieve the primary contact country, and the AWS Billing console required a separate sign-in. Cost Explorer showed zero tax records for October and November 1–9, which does not establish that future usage is tax-exempt. AWS promotional credits do not offset transaction-based taxes. If the account is located in Peru and is a non-business customer, AWS states that 18% VAT applies. The tax status therefore remained unverified and deployment stopped before any resource creation. See [AWS promotional credit terms](https://aws.amazon.com/awscredits/), [AWS Peru tax guidance](https://aws.amazon.com/tax-help/peru/), [EC2 pricing](https://aws.amazon.com/ec2/pricing/on-demand/), [EBS pricing](https://aws.amazon.com/ebs/pricing/), and [VPC pricing](https://aws.amazon.com/vpc/pricing/).
+No verified tax registration or contact country was returned in the initial preflight. Cost Explorer's zero historical tax records did not establish future tax exemption. AWS promotional credits do not offset transaction-based taxes; AWS states that 18% VAT applies to Peru B2C accounts. This initial check stopped before resource creation. After the user explicitly authorized up to USD 0.10 of potential out-of-pocket tax, the temporary AWS execution below proceeded. See [AWS promotional credit terms](https://aws.amazon.com/awscredits/), [AWS Peru tax guidance](https://aws.amazon.com/tax-help/peru/), [EC2 pricing](https://aws.amazon.com/ec2/pricing/on-demand/), [EBS pricing](https://aws.amazon.com/ebs/pricing/), and [VPC pricing](https://aws.amazon.com/vpc/pricing/).
+
+### AWS execution after explicit authorization — 2026-11-10
+
+The user authorized up to USD 0.50 in promotional credits and USD 0.10 for possible out-of-pocket taxes. One Canonical Ubuntu 24.04 `t3.micro` used an encrypted 8-GiB gp3 root volume, an ephemeral public IPv4, and an isolated security group. SSH was limited to the current client `/32`; TCP 80 was open for the demo. A 20-minute systemd boot timer initiated shutdown, and EC2 was configured to terminate on guest shutdown; both controls were verified before testing. The VM ran for about 8 minutes and was manually terminated immediately after the tests.
+
+The existing `scripts/setup-nginx.sh` installed Nginx and UFW and served the Module 02 page. Over SSH, real checks covered Linux identity and files, a demo user and group, ownership/mode and denied access, processes, `systemctl`, IP addressing, routes, DNS, UFW, listening ports, and local HTTP 200. The Windows client received external HTTP 200. Logs, redacted network rules, state evidence, manifests, and cleanup verification are in [evidence/aws-execution-20261110/](evidence/aws-execution-20261110/). `scripts/verify.sh` was transferred but not invoked verbatim; its relevant checks were run in the captured SSH session. A browser screenshot could not be captured because the in-app browser blocked the temporary raw-IP URL; this is recorded in `07-screenshot-note.txt`.
+
+The one-hour conservative estimate was USD 0.106277 before tax for compute, 8-GiB gp3, one public IPv4, and 1 GB egress. A 100% service reserve plus illustrative 18% tax gives USD 0.250813 total, within the authorized estimates. This is not a final bill or a hard cap. No final billing amount was available at cleanup; billing data may lag. The actual instance runtime was about 8 minutes.
 
 ### Objective status
 
 | Objective | Status |
 | --- | --- |
-| Create an eligible Ubuntu VM and secure network access | Not completed: Azure alternatives are subscription-restricted; AWS launch stopped before resource creation because tax treatment could not be verified. |
-| Demonstrate Linux CLI, users, groups, permissions, processes, services, and SSH | Not executed: deployment stopped at the AWS tax/cost gate before a VM was created. |
-| Install Nginx and verify local/external HTTP 200, DNS, and firewall | Not executed: no VM or endpoint existed. |
+| Create an eligible Ubuntu VM and secure network access | Completed and cleaned: Canonical Ubuntu 24.04 `t3.micro`, SSH `/32`, HTTP 80, isolated SG, encrypted 8-GiB gp3 root disk. |
+| Demonstrate Linux CLI, users, groups, permissions, processes, services, and SSH | Completed with live SSH tests on Ubuntu; outputs are saved in the AWS execution evidence. |
+| Install Nginx and verify local/external HTTP 200, DNS, and firewall | Completed: Nginx active; local and external HTTP 200; DNS, UFW, and security-group rules verified. |
 
-No VM, SSH, Linux, DNS, firewall, or HTTP tests were performed. No screenshot of a live Module 02 page exists. The existing Nginx and verification scripts remain procedures, not execution evidence.
+The AWS run includes real SSH, Linux, networking, firewall, service, and HTTP command outputs. No browser screenshot is included because the in-app browser blocked the temporary raw-IP page; the external HTTP 200 was captured from the Windows client.
 
 ### Cleanup
 
-The dedicated Azure resource group internship-m02-demo was confirmed absent on 2026-11-09. The AWS preflight on 2026-11-10 created no EC2 instance, EBS volume, public IP, key pair, or security group, so no AWS cleanup was needed. The earlier Azure SSH key was removed. Existing OCI resources and VIRTUPRO/DICSAR infrastructure were not modified.
+The AWS execution on 2026-11-10 terminated the exact instance and verified the root volume, ENI, security group, and key pair absent; the instance had no Elastic IP and created no snapshot. A preceding local CLI setup attempt created only a temporary security group and key pair, both removed and verified absent. Azure resource group internship-m02-demo remained absent per the November 9 check. The existing default VPC/subnet were read-only; OCI, VIRTUPRO/DICSAR, and other projects were not modified. Billing may lag, so no final zero-cost claim is made.
 
 See [CLEANUP.md](CLEANUP.md) for the cleanup record and safe procedure.
 
 ## Repository files
 
-- scripts/setup-nginx.sh installs Nginx and UFW on Ubuntu, restricts SSH to the supplied client CIDR, and publishes the module page. It was not run on a VM in this execution.
-- scripts/verify.sh contains the Linux, service, DNS, network, and HTTP checks. It was not run because no VM was created.
-- evidence/ contains sanitized real preflight, capacity, restriction, AWS cost-gate, and cleanup outputs. It contains no fabricated VM logs or runtime screenshots.
+- `scripts/setup-nginx.sh` was run on the temporary Ubuntu VM and installed Nginx/UFW, published the page, and verified local HTTP 200.
+- `scripts/verify.sh` was transferred but not invoked verbatim; the live checks are recorded in the SSH evidence.
+- `evidence/aws-execution-20261110/` contains sanitized real AWS, Linux, SSH, Nginx, HTTP, cost-estimate, and cleanup evidence. It contains no private key or home IP; no browser screenshot was captured.

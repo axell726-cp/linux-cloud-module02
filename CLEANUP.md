@@ -1,8 +1,28 @@
 # Cleanup record and procedure
 
-## AWS preflight — 2026-11-10
+## AWS temporary execution — 2026-11-10
 
-No AWS resource creation was attempted. The preflight stopped before RunInstances because the account tax location and whether transaction taxes apply could not be verified, while promotional credits do not cover transaction-based taxes. No instance, EBS volume, public IPv4, key pair, or security group was created; no deletion was required. The existing default VPC and public route were inspected read-only and left unchanged. No AWS resource IDs or key material were generated for this run.
+Run ID: `aws-m02-20261110T063105Z-3ab4a1` (`Project=internship-m02`). Only this run's IDs were used for termination and deletion.
+
+- EC2 `i-0373bae5ad68115f6`: reached `running`, passed the live checks, and is verified `terminated`.
+- Root EBS volume `vol-0f8ccab163cfc4515`: encrypted 8-GiB gp3 with `DeleteOnTermination=true`; verified absent.
+- Network interface `eni-0f7534a2df868213e`: `DeleteOnTermination=true`; verified absent.
+- Security group `sg-0cc2e53875651f5f4`: SSH TCP/22 restricted to the current client `/32` (redacted in evidence), HTTP TCP/80 open for the demo; deleted and verified absent.
+- Key pair `key-0fab380a425529dd3`: deleted and verified absent. The local private key, temporary known-hosts file, and user-data file were removed.
+- The instance used an auto-assigned public IPv4, not an Elastic IP. Exact-instance address lookup returned zero Elastic IPs; the run-volume snapshot lookup returned zero snapshots.
+- The guest timer was active with `OnBootSec=20min`; EC2 shutdown behavior was `terminate`. Manual termination followed the tests after about 8 minutes.
+
+A preceding pre-EC2 CLI setup attempt used Run ID `aws-m02-20261110T062638Z-fc29b4`. The CLI rejected the unsupported `--min-count/--max-count` arguments before sending a RunInstances request. Its temporary security group `sg-0e5bc7f05ae37a9e1` and key pair `key-0735720962f5fe27c` were deleted and verified absent; no EC2, volume, IP, or ENI was created for that attempt. Both manifests are retained with the evidence.
+
+The existing default VPC and public subnet were reused without changing their configuration. No VIRTUPRO, DICSAR, or other project resources were modified.
+
+The user authorized USD 0.50 of promotional credits and USD 0.10 for possible out-of-pocket tax. The conservative one-hour pre-tax estimate was USD 0.106277; with a 100% service reserve and illustrative 18% tax, the estimate was USD 0.250813. These are estimates, not a posted charge or billing cap. A final billing amount was not observed at cleanup; usage and tax data may be delayed. No final zero-cost claim is made.
+
+See [the execution logs and manifests](evidence/aws-execution-20261110/).
+
+## AWS initial preflight — 2026-11-10 (before explicit tax authorization)
+
+No AWS resource creation was attempted during this initial preflight. It stopped before RunInstances because the account tax location could not be verified and promotional credits do not cover transaction-based taxes. No instance or supporting AWS resource was created in that preflight. The later execution after explicit tax authorization is recorded above.
 ## Azure recheck and cleanup — 2026-11-09
 
 The authenticated, read-only SKU query marked Standard_B1ms and Standard_B2s NotAvailableForSubscription in Chile Central, West US, and Canada Central. No VM provisioning request was sent, and this check created no Azure resources. The dedicated resource group internship-m02-demo returned RESOURCE_GROUP_EXISTS=false. No deletion was needed for this run. The active subscription remained Enabled with spendingLimit=On; no billing balance refresh was performed because deployment stopped at the SKU restriction gate.

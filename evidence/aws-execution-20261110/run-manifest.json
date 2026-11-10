@@ -1,0 +1,91 @@
+{
+  "runId": "aws-m02-20261110T063105Z-3ab4a1",
+  "project": "internship-m02",
+  "region": "us-east-1",
+  "startedUtc": "2026-11-10T06:31:05.931949Z",
+  "deadlineUtc": "2026-11-10T07:01:05.931949Z",
+  "vpcId": "vpc-0cfd8134db8fe319f",
+  "subnetId": "subnet-0b5beda4c9e14084f",
+  "amiId": "ami-08b275ac6cc5dbefb",
+  "instanceType": "t3.micro",
+  "sshSourceCidr": "[REDACTED]/32",
+  "resources": {
+    "securityGroup": {
+      "id": "sg-0cc2e53875651f5f4",
+      "name": "internship-m02-sg-3ab4a1"
+    },
+    "keyPair": {
+      "id": "key-0fab380a425529dd3",
+      "name": "internship-m02-key-3ab4a1",
+      "deleted": true,
+      "deletedUtc": "2026-11-10T06:38:59.4654709Z"
+    },
+    "instance": {
+      "shutdownBehavior": "terminate",
+      "id": "i-0373bae5ad68115f6",
+      "name": "internship-m02-demo-3ab4a1",
+      "terminationRequestedUtc": "2026-11-10T06:38:57.9847716Z",
+      "lastReportedState": "terminated",
+      "terminatedVerifiedUtc": "2026-11-10T06:39:36.3780168Z"
+    },
+    "rootVolume": {
+      "id": "vol-0f8ccab163cfc4515",
+      "device": "/dev/sda1",
+      "deleteOnTermination": true
+    },
+    "networkInterface": {
+      "id": "eni-0f7534a2df868213e",
+      "deleteOnTermination": true
+    }
+  },
+  "autoTermination": {
+    "method": "systemd OnBootSec=20min plus InstanceInitiatedShutdownBehavior=terminate",
+    "verified": true,
+    "verifiedUtc": "2026-11-10T06:33:07.7234151Z"
+  },
+  "cleanup": {
+    "status": "verified",
+    "verifiedUtc": "2026-11-10T06:43:43.0569317Z",
+    "instanceTerminated": true,
+    "rootVolumeDeleted": true,
+    "networkInterfaceDeleted": true,
+    "securityGroupDeleted": true,
+    "keyPairDeleted": true,
+    "elasticIpsForInstance": 0,
+    "snapshotsForRunVolume": 0,
+    "localTemporaryFilesAbsent": true
+  },
+  "privateIp": "172.31.23.78",
+  "publicIp": "3.82.19.213",
+  "sshConnectedUtc": "2026-11-10T06:33:07.7366794Z",
+  "runtimeTests": {
+    "linuxCli": true,
+    "usersGroups": true,
+    "permissions": true,
+    "processes": true,
+    "systemdServices": true,
+    "sshPublicKey": true,
+    "networkingDnsFirewall": true,
+    "localHttp200": true,
+    "verifiedUtc": "2026-11-10T06:36:08.9814359Z"
+  },
+  "externalTest": {
+    "http200": true,
+    "moduleMarker": true,
+    "verifiedUtc": "2026-11-10T06:36:35.9964358Z"
+  },
+  "status": "tests-passed-resources-terminated-cleanup-verified",
+  "estimatedRuntimeMinutes": 8.0,
+  "screenshotCapture": "Not captured: browser blocked direct-IP HTTP page; external HTTP 200 captured via Invoke-WebRequest",
+  "costEstimate": {
+    "basis": "one-hour conservative estimate for t3.micro, 8-GiB gp3, one public IPv4, 1-GB egress",
+    "preTaxUSD": 0.106277,
+    "serviceReserveUSD": 0.106277,
+    "potentialTaxRateScenario": 0.18,
+    "potentialTaxWithReserveUSD": 0.03826,
+    "allInStressEstimateUSD": 0.250813,
+    "authorizedPromotionalCreditsUSD": 0.5,
+    "authorizedOutOfPocketTaxBudgetUSD": 0.1,
+    "finalBillingObserved": false
+  }
+}

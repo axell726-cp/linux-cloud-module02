@@ -1,0 +1,57 @@
+{
+  "observedUtc": "2026-11-10T06:38:15.8260661Z",
+  "runId": "aws-m02-20261110T063105Z-3ab4a1",
+  "instance": {
+    "id": "i-0373bae5ad68115f6",
+    "state": "running",
+    "instanceType": "t3.micro",
+    "imageId": "ami-08b275ac6cc5dbefb",
+    "launchTime": "2026-11-10T01:30:58-05:00",
+    "publicIp": "3.82.19.213",
+    "privateIp": "172.31.23.78",
+    "vpcId": "vpc-0cfd8134db8fe319f",
+    "subnetId": "subnet-0b5beda4c9e14084f",
+    "securityGroupId": "sg-0cc2e53875651f5f4",
+    "shutdownBehavior": "terminate",
+    "rootVolumeId": "vol-0f8ccab163cfc4515",
+    "rootVolumeSizeGiB": null,
+    "rootVolumeType": null,
+    "deleteOnTermination": true,
+    "networkInterfaceId": "eni-0f7534a2df868213e"
+  },
+  "securityGroup": {
+    "id": "sg-0cc2e53875651f5f4",
+    "tags": [
+      {
+        "Key": "Name",
+        "Value": "internship-m02-sg-3ab4a1"
+      },
+      {
+        "Key": "RunId",
+        "Value": "aws-m02-20261110T063105Z-3ab4a1"
+      },
+      {
+        "Key": "Project",
+        "Value": "internship-m02"
+      }
+    ],
+    "ingress": [
+      {
+        "protocol": "tcp",
+        "fromPort": 80,
+        "toPort": 80,
+        "source": "0.0.0.0/0"
+      },
+      {
+        "protocol": "tcp",
+        "fromPort": 22,
+        "toPort": 22,
+        "source": "[REDACTED_HOME_IP]/32"
+      }
+    ]
+  },
+  "emergencyTimer": {
+    "active": "verified over successful key-authenticated SSH",
+    "onBootSecMinutes": 20
+  }
+}

@@ -1,0 +1,11 @@
+runId=aws-m02-20261110T063105Z-3ab4a1
+launchUtc=2026-11-10T06:30:58.0000000Z
+terminationRequestedUtc=2026-11-10T06:38:57.9847716Z
+estimatedInstanceRuntimeMinutes=8
+oneHourConservativePreTaxUSD=0.106277
+100PercentServiceReserveUSD=0.106277
+illustrative18PercentTaxOnReservedAmountUSD=0.038260
+combinedStressEstimateUSD=0.250813
+authorizedCreditBudgetUSD=0.50
+authorizedPocketTaxBudgetUSD=0.10
+finalBillingAmount=not yet observed; AWS billing data may lag

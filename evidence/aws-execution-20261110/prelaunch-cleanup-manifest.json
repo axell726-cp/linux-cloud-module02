@@ -1,0 +1,41 @@
+{
+  "runId": "aws-m02-20261110T062638Z-fc29b4",
+  "project": "internship-m02",
+  "region": "us-east-1",
+  "startedUtc": "2026-11-10T06:26:38.2288823Z",
+  "deadlineUtc": "2026-11-10T06:56:38.2292368Z",
+  "vpcId": "vpc-0cfd8134db8fe319f",
+  "subnetId": "subnet-0b5beda4c9e14084f",
+  "amiId": "ami-08b275ac6cc5dbefb",
+  "instanceType": "t3.micro",
+  "sshSourceCidr": "[REDACTED]/32",
+  "resources": {
+    "securityGroup": {
+      "name": "internship-m02-sg-fc29b4",
+      "id": "sg-0e5bc7f05ae37a9e1",
+      "deleted": true
+    },
+    "keyPair": {
+      "name": "internship-m02-key-fc29b4",
+      "id": "key-0735720962f5fe27c",
+      "deleted": true
+    },
+    "instance": null,
+    "rootVolume": null,
+    "networkInterface": null
+  },
+  "autoTermination": {
+    "method": "systemd OnBootSec=20min plus InstanceInitiatedShutdownBehavior=terminate",
+    "verified": false
+  },
+  "cleanup": {
+    "status": "exact-key-pair-and-security-group-verified-absent; local-key-removed",
+    "verifiedUtc": "2026-11-10T06:29:29.6505824Z",
+    "instanceCreated": false,
+    "securityGroupDeleted": true,
+    "keyPairDeleted": true,
+    "localPrivateKeyRemoved": true
+  },
+  "status": "aborted-before-RunInstances-due-local-cli-argument-error",
+  "runInstancesRequestSent": false
+}
